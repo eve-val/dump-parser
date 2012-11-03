@@ -23,7 +23,7 @@ class Lexer(object):
   def __iter__(self):
     """The core of the lexer. Explicitly written to allow the current index to change, for backup purposes."""
     while True:
-      l = self.get_one_line
+      l = self.get_one_line()
       if not l:
         return
       yield l
