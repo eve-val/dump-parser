@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Splits the monolithic dump yaml file into a file per table."""
+"""Splits the monolithic dump JSON file into a file per table."""
 import StringIO
 import gc
 import os
@@ -9,17 +9,19 @@ import json
 
 def main(argv):
   if len(argv) < 3:
-    print 'Must specify both a yaml dump file and a directory.\nUsage: %s YAML DIRECTORY\n' % (sys.argv[0])
+    print 'Must specify both a JSON dump file and a directory.'
+    print 'Usage: %s MONOLITHIC_JSON OUTPUT_DIRECTORY\n' % sys.argv[0]
     sys.exit(1)
   target_dir = argv[2]
-  yaml_file = argv[1]
-  if not os.path.isfile(yaml_file) or not os.access(yaml_file, os.R_OK):
-    print 'File %s does not exist or is not readable.\nUsage: %s YAML DIRECTORY\n' % (yaml_file, sys.argv[0])
+  json_file = argv[1]
+  if not os.path.isfile(json_file) or not os.access(json_file, os.R_OK):
+    print 'File %s does not exist or is not readable.' % json_file
+    print 'Usage: %s MONOLITHIC_JSON OUTPUT_DIRECTORY\n' % sys.argv[0]
     sys.exit(1)
   if not os.path.isdir(target_dir):
-    print 'Directory %s does not exist.\nUsage: %s YAML DIRECTORY\n' % (target_dir, sys.argv[0])
-    sys.exit(1)
-  with open(yaml_file) as yf:
+    print 'Directory %s does not exist, creating.' % target_dir
+    os.mkdir(target_dir)
+  with open(json_file) as yf:
     current_table = None
     line_num = 0
     table_name = None
