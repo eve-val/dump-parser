@@ -7,11 +7,13 @@ import json
 
 
 def main(argv):
-  if len(argv) < 3 or not os.path.isdir(argv[1]):
-    print 'Must specify a directory of JSON files, and a directory with CCP\'s YAML files.\nUsage: %s JSON_DIR CCP_DIR\n' % (sys.argv[0])
+  if len(argv) != 4 or not os.path.isdir(argv[1]) or not os.path.isfile(argv[2]):
+    print 'Must specify a directory of JSON files, a JSON schema file, and a directory with CCP\'s YAML files.'
+    print 'Usage: %s JSON_DIR SCHEMA_FILE CCP_DIR\n' % (sys.argv[0])
     sys.exit(1)
   json_dir = argv[1]
-  ccp_dir = argv[2]
+  schema_file = argv[2]
+  ccp_dir = argv[3]
   # First, convert the new table
   print "creating graphics table"
   with open(os.path.join(ccp_dir, 'graphicIDs.yaml')) as f:
@@ -67,6 +69,20 @@ def main(argv):
       row.update(trow)
     with open(os.path.join(json_dir, 'invTypes.json'), 'w') as of:
       json.dump(origTypes, of)
+  # Finally, update the schema table to reflect the changes we've made.
+  print "modifying schema"
+  schema = None
+  with open(schema_file) as f:
+    schema = json.load(f)
+  if not schema:
+    print 'ERROR: Unable to update schema file!'
+    sys.exit(1)
+  schema['eveGraphics'] = {'graphicID': 'primary', 'graphicFile': 'string', 'description': 'string',
+                           'obsolete': 'boolean', 'graphicType': 'string', 'collidable': 'boolean',
+                           'explosionID': 'integer', 'directoryID': 'integer', 'graphicName': 'string'}
+  schema['invTypes'].update({'graphicID': 'integer', 'radius': 'float'})
+  with open(schema_file, 'w') as f:
+    json.dump(schema, f, sort_keys=True, indent=2)
 
 if __name__ == '__main__':
   main(sys.argv)
