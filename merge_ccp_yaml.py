@@ -58,6 +58,7 @@ def main(argv):
 
   with open(os.path.join(json_dir, 'invTypes.json')) as f:
     origTypes = json.load(f)
+  origTypes['columns'].extend(['graphicID', 'radius'])
   with open(os.path.join(ccp_dir, 'typeIDs.yaml')) as f:
     tids = yaml.safe_load(f)
     for tid in tids.keys():
