@@ -27,10 +27,10 @@ def main(argv):
     table_name = None
     for line in yf:
       line_num += 1
-      if line == '---\r\n':
+      if line == '---\n':
         current_table = StringIO.StringIO()
         continue
-      elif line == '...\r\n':
+      elif line == '...\n':
         table = json.loads(current_table.getvalue())
         table_name = table['table_name']
         print table_name
@@ -42,7 +42,7 @@ def main(argv):
         gc.collect()
         continue
       else:
-        current_table.write('%s\n' % line[:-2])
+        current_table.write(line)
 
 
 if __name__ == '__main__':
