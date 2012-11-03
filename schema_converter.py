@@ -101,7 +101,7 @@ def startState(lexer):
 def main(argv):
   if len(argv) != 3:
     sys.stderr.write('Incorrect number of arguments.\n')
-    sys.stderr.write('USAGE: %s SQL_SCRIPT OUTPUT_FILE' % argv[0])
+    sys.stderr.write('USAGE: %s SQL_SCRIPT OUTPUT_FILE\n' % argv[0])
     sys.exit(1)
   sql_script = argv[1]
   output_file = argv[2]
