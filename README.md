@@ -1,7 +1,7 @@
 dump-parser
 ===========
 
-A set of tools to deal with the JSON file produced by the dump extractor.
+A set of tools to deal with the JSON file produced by the dump extractor. You will need to run the dump through dos2unix or similar first.
 
 The following tools are provided:
 
