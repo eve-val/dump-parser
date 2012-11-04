@@ -2,6 +2,7 @@
 """Parses a MS SQL Server script that contains CREATE TABLE statements, and converts it to JSON."""
 import json
 import os
+from progressbar import ProgressBar, Bar, ETA, Percentage
 import re
 import StringIO
 import sys
@@ -20,12 +21,14 @@ class Lexer(object):
     self._inp = inp[:]
     self._idx = 0
     self.output = dict()
+    self.pbar = ProgressBar(widgets=['Converting... ', Bar(), ' ', Percentage(), ' ', ETA()], maxval=len(inp))
   def __iter__(self):
     """The core of the lexer. Explicitly written to allow the current index to change, for backup purposes."""
     while True:
       l = self.get_one_line()
       if not l:
         return
+      self.pbar.update(self._idx)
       yield l
   def backup(self, i):
     """Moves the current index into the input backward by `i` lines."""
@@ -46,9 +49,11 @@ class Lexer(object):
     return '%s\n' % self._inp[self._idx-1]
   def run(self):
     """Actually starts the whole lexer going."""
+    self.pbar.start()
     state = startState
     while state:
       state = state(self)
+    self.pbar.finish()
 
 ##### BEGIN state functions
 

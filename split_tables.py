@@ -3,9 +3,15 @@
 import StringIO
 import gc
 import os
+from progressbar import ProgressBar, Bar, ETA, Percentage, Widget
 import sys
 import json
 
+class TableNameWidget(Widget):
+  def __init__(self):
+    self.current_table = 'None'
+  def update(self, pbar):
+    return 'Table: %s' % self.current_table
 
 def main(argv):
   if len(argv) < 3:
@@ -25,24 +31,29 @@ def main(argv):
     current_table = None
     line_num = 0
     table_name = None
-    for line in yf:
+    tname = TableNameWidget()
+    inp = yf.read().splitlines()
+    pbar = ProgressBar(widgets=[tname, Bar(), ' ', Percentage(), ' ', ETA()], maxval=len(inp)).start()
+    for line in inp:
       line_num += 1
-      if line == '---\n':
+      if line == '---':
         current_table = StringIO.StringIO()
         continue
-      elif line == '...\n':
+      elif line == '...':
         table = json.loads(current_table.getvalue())
         table_name = table['table_name']
-        print table_name
+        tname.current_table=table_name
         with open(os.path.join(target_dir, '%s.json' % table_name), 'w') as tf:
           tf.write(current_table.getvalue())
         current_table.close()
         del table
         table_name = None
         gc.collect()
+        pbar.update(line_num)
         continue
       else:
         current_table.write(line)
+    pbar.finish()
 
 
 if __name__ == '__main__':
