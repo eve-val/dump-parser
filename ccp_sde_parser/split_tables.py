@@ -13,13 +13,13 @@ class TableNameWidget(Widget):
   def update(self, pbar):
     return 'Table: %s' % self.current_table
 
-def main(argv):
-  if len(argv) < 3:
+def main():
+  if len(sys.argv) < 3:
     print 'Must specify both a JSON dump file and a directory.'
     print 'Usage: %s MONOLITHIC_JSON OUTPUT_DIRECTORY\n' % sys.argv[0]
     sys.exit(1)
-  target_dir = argv[2]
-  json_file = argv[1]
+  target_dir = sys.argv[2]
+  json_file = sys.argv[1]
   if not os.path.isfile(json_file) or not os.access(json_file, os.R_OK):
     print 'File %s does not exist or is not readable.' % json_file
     print 'Usage: %s MONOLITHIC_JSON OUTPUT_DIRECTORY\n' % sys.argv[0]
@@ -57,4 +57,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main()

@@ -103,13 +103,13 @@ def startState(lexer):
 
 ##### END state functions
 
-def main(argv):
-  if len(argv) != 3:
+def main():
+  if len(sys.argv) != 3:
     sys.stderr.write('Incorrect number of arguments.\n')
-    sys.stderr.write('USAGE: %s SQL_SCRIPT OUTPUT_FILE\n' % argv[0])
+    sys.stderr.write('USAGE: %s SQL_SCRIPT OUTPUT_FILE\n' % sys.argv[0])
     sys.exit(1)
-  sql_script = argv[1]
-  output_file = argv[2]
+  sql_script = sys.argv[1]
+  output_file = sys.argv[2]
   if not os.path.isfile(sql_script):
     sys.stderr.write('Unable to access file %s\n' % sql_script)
     sys.exit(1)
@@ -122,4 +122,4 @@ def main(argv):
     json.dump(lexer.output, out_file, sort_keys=True, indent=2)
 
 if __name__=='__main__':
-  main(sys.argv)
+  main()

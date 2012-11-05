@@ -20,14 +20,14 @@ def create_table(table_name, fields):
   output.append(')')
   return '\n'.join(output)
 
-def main(argv):
-  if len(argv) != 4:
-    print "Incorrect number of arguments specified. Expected 3, but got %s" % (len(argv) - 1)
-    print "USAGE: %s JSON_DIR SCHEMA_FILE SQLITE_DB" % argv[0]
+def main():
+  if len(sys.argv) != 4:
+    print "Incorrect number of arguments specified. Expected 3, but got %s" % (len(sys.argv) - 1)
+    print "USAGE: %s JSON_DIR SCHEMA_FILE SQLITE_DB" % sys.argv[0]
     sys.exit(1)
-  json_dir = argv[1]
-  schema_file = argv[2]
-  sqlite_db = argv[3]
+  json_dir = sys.argv[1]
+  schema_file = sys.argv[2]
+  sqlite_db = sys.argv[3]
   if not os.path.isdir(json_dir):
     sys.stderr.write('The given JSON dir doesn\'t exist!\n')
     sys.exit(1)
@@ -71,4 +71,4 @@ def main(argv):
   conn.close()
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main()

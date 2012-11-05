@@ -136,8 +136,8 @@ def validate_args(argv):
     sys.exit(1)
   return json_dir, schema
 
-def main(argv):
-  json_dir, schema = validate_args(argv)
+def main():
+  json_dir, schema = validate_args(sys.argv)
   storage = Storage(FLAGS.credential_storage)
   credentials = storage.get()
   FLOW = OAuth2WebServerFlow(
@@ -154,4 +154,4 @@ def main(argv):
   load_tables(http, service, schema, json_dir)
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main()

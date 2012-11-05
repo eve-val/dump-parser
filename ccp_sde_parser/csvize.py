@@ -5,7 +5,7 @@ import os
 import sys
 import json
 
-if __name__ == '__main__':
+def main():
   if len(sys.argv) != 3:
     print 'Incorrect number of arguments'
     print 'USAGE: %s JSON_FILE OUTPUT_FILE' % sys.argv[0]
@@ -30,3 +30,6 @@ if __name__ == '__main__':
       dw.writerow({k:unicode(v).encode('utf-8') for k,v in d.items()})
       pbar.update(idx)
     pbar.finish()
+
+if __name__ == '__main__':
+  main()

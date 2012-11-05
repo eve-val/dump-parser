@@ -7,14 +7,14 @@ import yaml
 import json
 
 
-def main(argv):
-  if len(argv) != 4 or not os.path.isdir(argv[1]) or not os.path.isfile(argv[2]):
+def main():
+  if len(sys.argv) != 4 or not os.path.isdir(sys.argv[1]) or not os.path.isfile(sys.argv[2]):
     print 'Must specify a directory of JSON files, a JSON schema file, and a directory with CCP\'s YAML files.'
     print 'Usage: %s JSON_DIR SCHEMA_FILE CCP_DIR\n' % (sys.argv[0])
     sys.exit(1)
-  json_dir = argv[1]
-  schema_file = argv[2]
-  ccp_dir = argv[3]
+  json_dir = sys.argv[1]
+  schema_file = sys.argv[2]
+  ccp_dir = sys.argv[3]
   # First, convert the new table
   print "creating graphics table"
   with open(os.path.join(ccp_dir, 'graphicIDs.yaml')) as f:
@@ -104,4 +104,4 @@ def main(argv):
     json.dump(schema, f, sort_keys=True, indent=2)
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main()
