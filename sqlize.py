@@ -6,15 +6,15 @@ import os
 from progressbar import ProgressBar, Bar, Percentage, ETA
 import sys
 
-TYPE_MAPPING = dict(string='text', integer='int', float='real', boolean='boolean', primary='int')
+TYPE_MAPPING = dict(string='text', integer='int', float='real', boolean='boolean')
 
 def create_table(table_name, fields):
   """Generates a SQLite CREATE TABLE statement from the given table name and fields dict."""
   output = ['CREATE TABLE %s (' % table_name]
   primaries = []
   for field, dtype in fields.items():
-    output.append('  %s %s,' % (field, TYPE_MAPPING[dtype]))
-    if dtype == 'primary':
+    output.append('  %s %s,' % (field, TYPE_MAPPING[dtype[0]]))
+    if dtype[1]:
       primaries.append(field)
   output.append('  CONSTRAINT %s_pk PRIMARY KEY (%s)' % (table_name, ','.join(primaries)))
   output.append(')')

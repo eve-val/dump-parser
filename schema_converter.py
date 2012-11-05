@@ -65,7 +65,7 @@ def constraintState(lexer):
       lexer.backup(1)
       return startState
     field = re.search(r'\[(\w+)\]', line).group(1)
-    lexer.output[lexer.curr_table][field] = 'primary'
+    lexer.output[lexer.curr_table][field] = (lexer.output[lexer.curr_table][field][0], True)
   lexer.error('Reached end of file before end of CONSTRAINT clause!\nTable: %s' % lexer.curr_table)
   return None
 
@@ -90,7 +90,7 @@ def createTableState(lexer):
       lexer.error('Could not match the LINE_REGEX to this value!\nSaw line: %s' % line)
       return None
     else:
-      lexer.output[table_name][m.group(1)] = SCHEMA_TYPE.get(m.group(2),'string')
+      lexer.output[table_name][m.group(1)] = (SCHEMA_TYPE.get(m.group(2),'string'), False)
   return startState
 
 def startState(lexer):

@@ -93,10 +93,13 @@ def main(argv):
   if not schema:
     print 'ERROR: Unable to update schema file!'
     sys.exit(1)
-  schema['eveGraphics'] = {'graphicID': 'primary', 'graphicFile': 'string', 'description': 'string',
-                           'obsolete': 'boolean', 'graphicType': 'string', 'collidable': 'boolean',
-                           'explosionID': 'integer', 'directoryID': 'integer', 'graphicName': 'string'}
-  schema['invTypes'].update({'graphicID': 'integer', 'radius': 'float', 'soundID': 'integer'})
+  schema['eveGraphics'] = {'graphicID': ('integer', True), 'graphicFile': ('string', False),
+                           'description': ('string', False), 'obsolete': ('boolean', False),
+                           'graphicType': ('string', False), 'collidable': ('boolean', False),
+                           'explosionID': ('integer', False), 'directoryID': ('integer', False),
+                           'graphicName': ('string', False)}
+  schema['invTypes'].update({'graphicID': ('integer', False), 'radius': ('float', False),
+                             'soundID': ('integer', False)})
   with open(schema_file, 'w') as f:
     json.dump(schema, f, sort_keys=True, indent=2)
 
