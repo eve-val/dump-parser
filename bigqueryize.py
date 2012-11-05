@@ -23,6 +23,9 @@ gflags.DEFINE_string('schema_file', None, 'The path to a schema file. Defaults t
 gflags.DEFINE_string('credential_storage', 'biqueryize_creds.dat', 'Where to store credentials.')
 gflags.DEFINE_string('client_id', None, 'The Google BigQuery client_id.')
 gflags.DEFINE_string('client_secret', None, 'The Google BigQuery client_secret.')
+gflags.DEFINE_string('start_at', '', 'The table at which to start the upload.')
+gflags.DEFINE_list('skip_tables', [], 'Tables to skip.')
+gflags.DEFINE_list('only_tables', None, 'Upload only these tables.')
 gflags.MarkFlagAsRequired('project_id')
 gflags.MarkFlagAsRequired('dataset_id')
 gflags.MarkFlagAsRequired('client_id')
@@ -54,28 +57,35 @@ Content-Type: application/octet-stream
 --xxx--
 '''
 def load_tables(http, service, schema, json_dir):
+  """Actually load all the requested tables into BigQuery."""
   url = 'https://www.googleapis.com/upload/bigquery/v2/projects/%s/jobs' % FLAGS.project_id
+  if FLAGS.only_tables:
+    schema = [i for i in schema.items() if i[0] in FLAGS.only_tables]
+  else:
+    schema = [i for i in schema.items() if FLAGS.start_at <= i[0]]
   pbar = ProgressBar(widgets=['Uploading...', Bar(), ' ', Percentage(), ' ', ETA()],
-                     maxval=len(schema.keys())*2).start()
+                     maxval=len(schema)-len(FLAGS.skip_tables)).start()
   jobs = dict()
-  for table_name, scheme in schema.items():
+  for table_name, scheme in sorted(schema, key=lambda x: x[0]):
+    if table_name in FLAGS.skip_tables:
+      continue
     table = None
     with open(os.path.join(json_dir, '%s.json' % table_name)) as f:
       table = json.load(f)
     table_id = FLAGS.table_prefix + table_name
     bq_schema = []
     for field, ftype in scheme.items():
-      bq_schema.append(dict(mode='nullable', name=field, type=TYPE_MAPPING[ftype]))
+      bq_schema.append(dict(mode='nullable', name=field, type=TYPE_MAPPING[ftype[0]]))
     bq_schema = json.dumps(bq_schema)
     data = []
     for row in table['data']:
+      pbar.update(len(jobs.keys()))
       data.append(json.dumps(row))
     data = '\n'.join(data)
-
     bq_request = TABLE_STANZA % (bq_schema, FLAGS.project_id, FLAGS.dataset_id, table_id, data)
     bq_headers = {'Content-Type': 'multipart/related; boundary=xxx'}
     resp, content = http.request(url, method='POST', body=bq_request, headers=bq_headers)
-    if resp != 200:
+    if resp.status != 200:
       print 'Error in sending request.'
       print 'REQUEST:'
       print bq_request
@@ -86,22 +96,19 @@ def load_tables(http, service, schema, json_dir):
     content = json.loads(content)
     jobs[content['jobReference']['jobId']] = table_name
     pbar.update(len(jobs.keys()))
+  pbar.finish()
   import time
-  idx = len(jobs.keys())
   while True:
     jobCollection = service.jobs()
     for jobRef in list(jobs.keys()):
-      getJob = jobCollection.get(projectId=projectId, jobId=jobRef).execute()
+      getJob = jobCollection.get(projectId=FLAGS.project_id, jobId=jobRef).execute()
       currentStatus = getJob['status']['state']
-
       if 'DONE' == currentStatus:
-        idx += 1
+        print 'Table %s done!' % jobs[jobRef]
         del jobs[jobRef]
-        pbar.update(idx)
     if len(jobs.keys()) == 0:
       break
     time.sleep(10)
-  pbar.finish()
 
 def validate_args(argv):
   try:
@@ -130,8 +137,6 @@ def validate_args(argv):
   return json_dir, schema
 
 def main(argv):
-  print "Silas must first implement throttling -- only two jobs at a time!"
-  sys.exit(1)
   json_dir, schema = validate_args(argv)
   storage = Storage(FLAGS.credential_storage)
   credentials = storage.get()
