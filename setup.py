@@ -1,3 +1,5 @@
+import ez_setup
+ez_setup.use_setuptools()
 import os
 from setuptools import setup
 
@@ -18,7 +20,7 @@ setup(
   keywords = "EVE Online Static Dump Export Parser",
   url = "https://github.com/eve-val/dump-parser",
   packages=['ccp_sde_parser'],
-  long_description=read('README'),
+  long_description=read('README.md'),
   classifiers=[
     "Development Status :: 3 - Alpha",
     "Topic :: Utilities",
@@ -29,7 +31,7 @@ setup(
     'gflags',
     'progressbar',
     'PyYAML'
-  ]
+  ],
   entry_points={
     'console_scripts': [
       'split_tables = ccp_sde_parser.split_tables:main',

@@ -5,20 +5,20 @@ A set of tools to deal with the JSON file produced by the dump extractor. You wi
 
 The following tools are provided:
 
-`split_tables.py`:
+`split_tables`:
   Splits the monolithic JSON dump into a separate file per database table. The rest of the tools depend on this tool having already been run.
 
-`merge_ccp_yaml.py`:
+`merge_ccp_yaml`:
   Given a directory of JSON files produced by `split_tables.py`, and the YAML files from CCP, this tool merges the two sources of data, writing the result to the JSON files directly.
 
-`schema_converter.py`:
+`schema_converter`:
   Convert the MS SQL CREATE TABLE script to a JSON schema. This is used by `sqlize.py` and `bigqueryize.py`.
 
-`csvize.py`:
+`csvize`:
   Converts the specified JSON file into a CSV file, using the 'excel' format.
 
-`sqlize.py`:
+`sqlize`:
   Convert a directory of JSON files into a SQLite DB.
 
-`bigqueryize.py`:
+`bigqueryize`:
   Upload a directory of JSON files to Google BigQuery.
